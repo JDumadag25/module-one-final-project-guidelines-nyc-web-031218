@@ -9,6 +9,7 @@ class CreateListings < ActiveRecord::Migration
       t.boolean :pets?
       t.float :price
       t.string :property_type
+      t.integer :realtor_id
     end
   end
 end

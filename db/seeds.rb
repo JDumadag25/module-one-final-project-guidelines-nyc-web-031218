@@ -1,0 +1,13 @@
+
+jon = Realtor.create(name: "Jon")
+justing = Realtor.create(name: "Justin")
+dick = Customer.create(name: "Dick")
+graham = Customer.create(name: "Graham")
+natalie = Customer.create(name: "Natalie")
+rishi = Customer.create(name: "Rishi")
+property_1 = Listing.create(address: "123 State ST", city: "New York", neighborhood: "Chelsea", bedrooms: 2, bathrooms: 1, pets?: false, price: 3300, property_type: "apt")
+property_2 = Listing.create(address: "666 Hells ST", city: "New York", neighborhood: "Brooklyn", bedrooms: 1, bathrooms: 1, pets?: true, price: 1200, property_type: "apt")
+property_3 = Listing.create(address: "777 Jesus AVE", city: "New York", neighborhood: "Harlem", bedrooms: 3, bathrooms: 2, pets?: true, price: 3500, property_type: "apt")
+property_4 = Listing.create(address: "1738 Wap AVE", city: "New York", neighborhood: "Hell's Kitchen", bedrooms: 3, bathrooms: 2, pets?: false, price: 35000, property_type: "condo")
+property_5 = Listing.create(address: "8675 Jenny WAY", city: "New York", neighborhood: "Midtown", bedrooms: 2, bathrooms: 1, pets?: true, price: 2300, property_type: "apt")
+property_6 = Listing.create(address: "567 Sour Patch Street", city: "New York", neighborhood: "Washington Heights", bedrooms: 4, bathrooms: 2, pets?: false, price: 1350, property_type: "condo")

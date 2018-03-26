@@ -1,6 +1,6 @@
 class CreateCustomers < ActiveRecord::Migration
   def change
-    create_table :realtors do |t|
+    create_table :customers do |t|
       t.string :name
       t.string :city
       t.string :neighborhood
@@ -9,6 +9,7 @@ class CreateCustomers < ActiveRecord::Migration
       t.boolean :pets?
       t.float :price_range
       t.string :property_type
+      t.integer :realtor_id
     end
   end
 end
