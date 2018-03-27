@@ -7,7 +7,8 @@ class CreateCustomers < ActiveRecord::Migration
       t.integer :bedrooms
       t.integer :bathrooms
       t.boolean :pets?
-      t.float :price_range
+      t.float :lowest_price
+      t.float :highest_price
       t.string :property_type
       t.integer :realtor_id
     end
