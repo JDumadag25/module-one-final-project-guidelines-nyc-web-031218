@@ -14,14 +14,17 @@ ActiveRecord::Schema.define(version: 3) do
 
   create_table "customers", force: :cascade do |t|
     t.string  "name"
+    t.string  "user_name"
+    t.string  "password"
     t.string  "city"
     t.string  "neighborhood"
     t.integer "bedrooms"
     t.integer "bathrooms"
-    t.boolean "pets?"
+    t.boolean "pets"
     t.float   "lowest_price"
     t.float   "highest_price"
-    t.string  "property_type"
+    t.string  "phone"
+    t.string  "email"
     t.integer "realtor_id"
   end
 
@@ -31,7 +34,7 @@ ActiveRecord::Schema.define(version: 3) do
     t.string  "neighborhood"
     t.integer "bedrooms"
     t.integer "bathrooms"
-    t.boolean "pets?"
+    t.boolean "pets"
     t.float   "price"
     t.string  "property_type"
     t.integer "realtor_id"
@@ -39,6 +42,10 @@ ActiveRecord::Schema.define(version: 3) do
 
   create_table "realtors", force: :cascade do |t|
     t.string "name"
+    t.string "user_name"
+    t.string "password"
+    t.string "phone"
+    t.string "email"
   end
 
 end
