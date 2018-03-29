@@ -158,10 +158,10 @@ def print_client_options
   puts "##       1. View your profile                ##"
   puts "##       2. View your realtor information    ##"
   puts "##       3. Update your preferences          ##"
-  puts "##       4. Delete your account              ##"
-  puts "##       5. Exit program                     ##"
+  puts "##       3. Delete your account              ##"
+  puts "##       4. Exit program                     ##"
   puts '###############################################'
-  puts "\nPlease choose an option(1-5):\n"
+  puts "\nPlease choose an option(1-4):\n"
 end
 
 def print_client_update_options

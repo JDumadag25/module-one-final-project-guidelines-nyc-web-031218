@@ -1,4 +1,3 @@
-
 def prompt_client_username
   puts "\nPlease input your user name:\n"
   user_name = gets.chomp
