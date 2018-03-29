@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 3) do
 
-  create_table "customers", force: :cascade do |t|
+  create_table "clients", force: :cascade do |t|
     t.string  "name"
     t.string  "user_name"
     t.string  "password"

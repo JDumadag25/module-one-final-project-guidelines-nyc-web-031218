@@ -1,10 +1,8 @@
-
 def prompt_realtor_username
   puts "\nPlease input your user name:\n"
   user_name = gets.chomp
   while Realtor.all.find_by(user_name: user_name) == nil
-    puts "\nSorry, the user name you input does not exist"
-    puts "Please input a valid user name:\n"
+    print_invalid_username
     user_name = gets.chomp
   end
   user_name
@@ -14,29 +12,14 @@ def prompt_realtor_password(user_name)
   puts "\nPlease input your password:\n"
   password = gets.chomp
   while Realtor.all.find_by(user_name: user_name).password != password
-    puts "\nSorry, the password you entered is invalid"
-    puts "Please input your valid password\n"
+    print_invalid_password
     password = gets.chomp
   end
   password
 end
 
 def show_realtor_options(realtor)
-  puts "\n\n################################"
-  puts "#             MENU             #"
-  puts "#------------------------------#"
-  puts "#------------------------------#"
-  puts "#  1. View all listings        #"
-  puts "#  2. View all your clients    #"
-  puts "#  3. Get clients's listings   #"
-  puts "#  4. Aquire new client        #"
-  puts "#  5. Drop a client            #"
-  puts "#  6. Create a new listing     #"
-  puts "#  7. Drop a listing           #"
-  puts "#  8. Close a deal             #"
-  puts "#  9. Return to main meu       #"
-  puts "################################"
-  puts "\nChoose an option (1-9):\n"
+  print_realtor_options
   option = gets.chomp.to_i
   do_realtor_option(option, realtor)
 end
@@ -44,48 +27,39 @@ end
 def do_realtor_option(option, realtor)
   case option
   when 1
-    Listing.view_all
+    realtor.view_all_listings
     show_realtor_options(realtor)
   when 2
-    if realtor.view_all_customers.count == 0
-      puts "\n\n --------------------------------------------------"
-      puts "|       YOU CURRENTLY DON'T HAVE ANY CLIENTS       |"
-      puts "|  Hint: Select option #4 to aquire a new client   |"
-      puts " --------------------------------------------------\n"
+    if realtor.get_your_clients.count == 0
+      print_no_clients
     else
-      realtor.view_all_customers
+      realtor.view_all_clients
     end
     show_realtor_options(realtor)
   when 3
     puts "\nPlease input the name of a client you would like to match listings to:\n"
     name = gets.chomp
-    ### WE COULD VALIDATE NAME IF WE WANTED
-    client_listings = realtor.get_listings_for_customer_by_name(name)
-    puts "\n\n###########################################"
-    puts "#           Listings for #{name}          #"
-    puts "###########################################\n"
-    client_listings.each_with_index do |listing, index|
-      puts "------------------------------------------"
-      puts "  Listing ##{index + 1}:"
-      puts " - - - - - - - - - - - - - - - - - - - - -"
-      puts "  Address      : #{listing.address}"
-      puts "  City         : #{listing.city}"
-      puts "  Neighborhood : #{listing.neighborhood}"
-      puts "  Bedrooms     : #{listing.bedrooms}"
-      puts "  Bathrooms    : #{listing.bathrooms}"
-      puts "  Price        : #{listing.price}"
-      puts "  Property Type: #{listing.property_type}"
-      puts "  Pet Friendly : #{listing.pets}"
-      puts "------------------------------------------"
+    available_clients = realtor.get_your_clients
+    if !Client.find_by(name: name)
+      print_client_not_found
+    elsif available_clients.count == 0
+      print_no_clients
+    else
+      client_listings = realtor.get_listings_for_client_by_name(name)
+      if client_listings.count == 0
+        print_no_match_for_client
+      else
+        print_client_listings(name, client_listings)
+      end
     end
     show_realtor_options(realtor)
   when 4
-    puts realtor.aquire_customer
+    puts realtor.aquire_client
     show_realtor_options(realtor)
   when 5
     puts "\nPlease input the name of the client you would like to drop:\n"
     name = gets.chomp
-    puts realtor.drop_customer_by_name(name)
+    realtor.drop_client_by_name(name)
     show_realtor_options(realtor)
   when 6
     realtor.create_listing
@@ -101,23 +75,27 @@ def do_realtor_option(option, realtor)
     puts "\nEnter the address of the listing:\n"
     address = gets.chomp
     realtor.close_deal(client, address)
-    puts "CONGRATULATIONS #{realtor.name} you closed the deal and made some $$$$$"
+    print_close_deal(realtor)
     show_realtor_options(realtor)
   when 9
-    puts "\nReturning to main menu!"
-    main_program
+    goodbye
   else
-    puts "\nInvalid Input. Please enter a number from 1-5\n"
+    print_invalid_realtor_input
     show_realtor_options(realtor)
   end
 end
 
 def create_realtor
+  puts "\nPlease enter the company's password to create an account:\n"
+  company_password_input = gets.chomp
+  if company_password_input != "HelloWorld"
+    print_invalid_company_password
+    main_program
+  end
   puts "\nPlease enter a user name:\n"
   user_name = gets.chomp
   while Realtor.all.find_by(user_name: user_name)
-    puts "\nSorry, that user name is already taken."
-    puts "Please enter a user name:\n"
+    print_invalid_username_taken
     user_name = gets.chomp
   end
   password_1 = 1

@@ -1,119 +1,95 @@
 class Realtor < ActiveRecord::Base
   has_many :listings
-  has_many :customers
+  has_many :clients
 
-  def aquire_customer
-    customer = Customer.find_by(realtor_id: nil)
-    if customer
-      customer.update(realtor_id: self.id)
+
+##### Step 1
+def view_all_listings
+  print_all_listings
+end
+
+###### Step 2
+  def view_all_clients
+    clients = get_your_clients
+    print_all_clients(clients)
+  end
+
+  def get_your_clients
+    Client.all.select do |client|
+      client.realtor_id == self.id
+    end
+  end
+
+#### Step 3
+################### GET LISTINGS FOR CLIENT BY NAME ####################
+  def get_listings_for_client_by_name(name)
+    client = Client.find_by(name: name)
+    client_listings = []
+    if client && get_your_clients.include?(client)
+      client_listings = Listing.all
+      client_listings = select_listings(client_listings, client, 'city')
+      client_listings = select_listings(client_listings, client, 'neighborhood')
+      client_listings = select_listings(client_listings, client, 'bedrooms')
+      client_listings = select_listings(client_listings, client, 'bathrooms')
+      client_listings = select_listings_pets(client, client_listings)
+      client_listings = select_listings_price_range(client, client_listings)
+    end
+    client_listings
+  end
+
+  def select_listings(client_listings, client, data)
+    if client[data]
+      client_listings = client_listings.select do |listing|
+          listing[data] == client[data]
+      end
+    end
+    client_listings
+  end
+
+  def select_listings_pets(client, client_listings)
+    if client.pets
+      client_listings = client_listings.select do |listing|
+        listing.pets
+      end
+    end
+    client_listings
+  end
+
+  def select_listings_price_range(client, client_listings)
+    if client.lowest_price != nil
+      client_listings = client_listings.select do |listing|
+        listing.price >= client.lowest_price
+      end
+    end
+    if client.highest_price != nil
+      client_listings = client_listings.select do |listing|
+        listing.price <= client.highest_price
+      end
+    end
+    client_listings
+  end
+
+##### Step 4
+  def aquire_client
+    client = Client.find_by(realtor_id: nil)
+    if client
+      client.update(realtor_id: self.id)
     else
-      puts "\n\n ------------------------------------------"
-      puts "|    There are no new clients available    |"
-      puts " ------------------------------------------\n"
+      print_no_clients_available
     end
   end
 
-  def view_all_customers
-    customers = Customer.all.select {|customer|
-      customer.realtor_id == self.id }
-    puts customers
-  customers.each_with_index do |client, index|
-      puts "------------------------------------------"
-      puts "  Client ##{index + 1}: "
-      puts " - - - - - - - - - - - - - - - - - - - - -"
-      puts "  Name         : #{client.name}"
-      puts "  E-mail       : #{client.email}"
-      puts "  Phone        : #{client.phone}"
-      puts "  City         : #{client.city}"
-      puts "  Neighborhood : #{client.neighborhood}"
-      puts "  Bedrooms     : #{client.bedrooms}"
-      puts "  Bathrooms    : #{client.bathrooms}"
-      puts "  Price Range  : #{client.lowest_price} - #{client.highest_price}"
-      puts "  Pet owner    : #{client.pets}"
-      puts "------------------------------------------"
-    end
-  end
-
-  def get_listings_for_customer_by_name(name)
-    customer = Customer.find_by(name: name)
-    get_listings_by_location(customer)
-  end
-
-  def get_listings_by_location(customer)
-    customers_listings = Listing.all
-    if customer.city != nil
-      customers_listings = customers_listings.select {|listing|
-      listing.city == customer.city }
-    end
-    if customer.neighborhood != nil
-      customers_listings = customers_listings.select {|listing|
-      listing.neighborhood == customer.neighborhood}
-    end
-    get_listings_by_bedrooms(customer, customers_listings)
-  end
-
-  def get_listings_by_bedrooms(customer, customers_listings)
-    if customer.bedrooms != nil
-      customers_listings = customers_listings.select {|listing|
-      listing.bedrooms == customer.bedrooms}
-    end
-    get_listings_by_bathrooms(customer, customers_listings)
-  end
-
-  def get_listings_by_bathrooms(customer, customers_listings)
-    if customer.bathrooms != nil
-      customers_listings = customers_listings.select {|listing|
-      listing.bathrooms == customer.bathrooms}
-    end
-    get_listings_by_price_range(customer, customers_listings)
-  end
-
-  def get_listings_by_price_range(customer, customers_listings)
-    if customer.lowest_price != nil
-      customers_listings = customers_listings.select {|listing|
-      listing.price >= customer.lowest_price}
-    end
-    if customer.highest_price != nil
-      customers_listings = customers_listings.select {|listing|
-      listing.price <= customer.highest_price}
-    end
-    get_listings_by_pets(customer, customers_listings)
-  end
-
-
-  def get_listings_by_pets(customer, customers_listings)
-    if customer.pets? != false
-      customers_listings = customers_listings.select {|listing|
-      listing.pets}
-    end
-    customers_listings
-  end
-
-  def drop_customer_by_name(name)
-    user = Customer.find_by(name: name)
-    if user != nil
-      user.destroy
+###### Step 5
+  def drop_client_by_name(name)
+    client = Client.find_by(name: name)
+    if client.realtor_id == self.id
+      client.destroy
     else
-      puts "\nSorry, could not client."
-      puts "Make sure you input the correct name for the client.\n"
+      print_client_not_found
     end
   end
 
-  def drop_listing_by_address(address)
-    listing = Listing.find_by(address: address)
-    if listing != nil
-      listing.destroy
-    else
-      puts "\nSorry, could not find listing."
-      puts "Make sure you input the correct address\n"
-    end
-  end
-
-  def close_deal(client, address)
-    self.drop_customer_by_name(client)
-    self.drop_listing_by_address(address)
-  end
-
+  ##### Step 6
   def create_listing
     puts "\nPlease enter the following information:"
     puts "\nAddress:\n"
@@ -123,9 +99,9 @@ class Realtor < ActiveRecord::Base
     puts "\nNeighborhood:\n"
     neighborhood = gets.chomp
     puts "\nBedrooms:\n"
-    bedrooms = gets.chomp
+    bedrooms = gets.chomp.to_i
     puts "\nBathrooms\n"
-    bathrooms = gets.chomp
+    bathrooms = gets.chomp.to_i
     puts "\nPrice\n"
     price = gets.chomp.to_f
     puts "\nProperty Type\n"
@@ -141,5 +117,20 @@ class Realtor < ActiveRecord::Base
     Listing.create(address: address, city: city,
       neighborhood: neighborhood, bedrooms: bedrooms, bathrooms: bathrooms, pets: pets, price: price,
       property_type: property_type)
+  end
+
+#### Step 7
+  def drop_listing_by_address(address)
+    listing = Listing.find_by(address: address)
+    if listing
+      listing.destroy
+    else
+      print_listing_not_found
+    end
+  end
+###### Step 8
+  def close_deal(client, address)
+    self.drop_client_by_name(client)
+    self.drop_listing_by_address(address)
   end
 end
